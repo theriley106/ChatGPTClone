@@ -7,6 +7,8 @@ except:
 
 openai.api_key = API_KEY
 
+TRANSCRIPT = open("transcript.txt").read()
+
 # Pass in a "Modified" prompt (with the chat history from before)
 def fetch_openai_response(prompt):
     start_sequence = "\nAI:"
@@ -35,20 +37,29 @@ The lecture is as followed:
 class ChatGPTClone():
     def __init__(self, lecture):
         # You probably don't need to feed it any lecture to begin
-        self.prompt = START_PROMPT + "\n"
+        self.prompt = START_PROMPT + "\n" + lecture + "\n"
+        self.last = []
 
     def add_to_prompt(self, text):
-        self.prompt += "Student: " + text + "\nAI: "
+        xr = "Student: " + text + "\nAI: "
+        self.last.append(xr)
+        self.prompt += xr
 
 
 
     def submit(self):
-        return fetch_openai_response(self.prompt)
+        # print(self.last[-1], end=" ")
+        return "AI: " + fetch_openai_response(self.prompt)
 
     
 
 if __name__ == "__main__":
-    chatGPT = ChatGPTClone("Hello. Today I will be teaching CS50 at Brown University.")
-    chatGPT.add_to_prompt("What is this class about?")
-    print(chatGPT.submit())
-    # print(fetch_openai_response())
+    A = ChatGPTClone(TRANSCRIPT)
+    # chatGPT.add_to_prompt("What is this class about?")
+
+    newPrompt = "test"
+
+    while len(newPrompt) > 0:
+        newPrompt = input("Client: ")
+        A.add_to_prompt(newPrompt)
+        print(A.submit())
